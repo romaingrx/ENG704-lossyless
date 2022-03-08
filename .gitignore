@@ -1,0 +1,13 @@
+# Vim swap files
+*.*.swp
+# Latex output files
+*.aux
+*.log
+*.nav
+*.out
+*.snm
+*.synctex.gz
+*.toc
+
+# Research data folder
+research/data

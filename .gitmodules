@@ -1,0 +1,3 @@
+[submodule "lossyless"]
+	path = lossyless
+	url = git@github.com:YannDubs/lossyless.git
