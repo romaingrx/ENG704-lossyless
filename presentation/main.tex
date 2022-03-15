@@ -2,7 +2,7 @@
 %-*- coding: utf-8 -*-
 %@author : Romain Graux
 %@date : 2022 Mar 08, 16:20:03
-%@last modified : 2022 Mar 15, 13:35:12
+%@last modified : 2022 Mar 15, 19:43:16
 
 
 % [ PLAN ] 
@@ -13,11 +13,11 @@
 % - Intuition
 %   - Example on MNIST
 
-\documentclass[8pt,t]{beamer}
+\documentclass[10pt,t]{beamer}
 
 
 % Import all packages
-\usepackage{graphicx,caption}
+\usepackage{graphicx,xcolor,caption}
 
 % Color declarations
 \definecolor{greyBackgroundColor}{rgb}{0.8,0.8,0.8}
@@ -37,8 +37,12 @@
 \setbeamercolor{progress bar}{fg=secondaryColor}
 
 % Personal commands declaration
+% all path commands
 \newcommand{\docsPath}[1]{./docs/#1}
 \newcommand{\imgsPath}[1]{\docsPath{imgs/#1}}
+\newcommand{\mnistPath}[1]{\imgsPath{mnist/#1}}
+% visualization commands
+\newcommand{\question}[1]{\colorbox{primaryColor!15}{\large{\color{secondaryColor}#1}}}
 
 % Meta information declaration
 \title{Lossy compression for lossless prediction}
@@ -47,6 +51,7 @@
 \date{\today}
 
 \begin{document}
+\metroset{block=fill}
 
 \begin{frame}
     \titlepage
@@ -61,6 +66,7 @@
     }
 
     \def \imgWidth {0.23\textwidth}
+    
 
     \only<3>{
         \begin{figure}
@@ -156,21 +162,87 @@
             \end{figure}
     }
     \end{columns}
+\end{frame}
+
+\begin{frame}{What they designed}
+    \begin{center}
+        \large{They designed a \textbf{task-centric} distortion that ensures good downstream performance}
+    \end{center}
+    \pause
+    \vfill
+    \begin{itemize}[<+->]
+        \item Characterize minimum bit-rate to ensure high performance on desired tasks;
+        \item Derive unsupervised objectives for training \textbf{task-centric} compressors;
+        \item $> 1000x$ compression gains on Imagenet compared to JPEG (see Slide \ref{slide:performance}).
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Intuition: Augmented MNIST}
+    \foreach \dir\cap\lab in {
+        \mnistPath{source/}/Source: Augmented MNIST/mnist-source,
+        \mnistPath{standard/}/Standard neural compressor: 130 bit-rate/mnist-standard,
+        \mnistPath{prototypicals/}/Their neural compressor: 48 bit-rate/mnist-our
+    }{
+        \only<1>{
+            \begin{figure}
+                \centering
+                \includegraphics[width=0.15\textwidth]{\dir0.png}
+                \includegraphics[width=0.15\textwidth]{\dir1.png}
+                \includegraphics[width=0.15\textwidth]{\dir2.png}
+                \includegraphics[width=0.15\textwidth]{\dir3.png}
+                \includegraphics[width=0.15\textwidth]{\dir4.png}
+                \caption*{\cap}
+                \label{fig:\lab-big}
+            \end{figure}
+
+            \vspace{-15pt}
+        }
+
+        \only<2->{
+            \begin{figure}
+                \centering
+                \includegraphics[width=0.05\textwidth]{\dir0.png}
+                \includegraphics[width=0.05\textwidth]{\dir1.png}
+                \includegraphics[width=0.05\textwidth]{\dir2.png}
+                \includegraphics[width=0.05\textwidth]{\dir3.png}
+                \includegraphics[width=0.05\textwidth]{\dir4.png}
+                \label{fig:\lab-small}
+            \end{figure}
+
+            \vspace{-20pt}
+        }
+    }
+
+    \only<2->{
+        \vfill
+        \textbf{Prototypical} digit ensures 
+        \begin{math}
+            \begin{array}{l}
+                \rightarrow \text{high downstream performance}\\
+                \rightarrow \text{good compression rate}
+            \end{array}
+        \end{math}
+    }
+
+    \only<3->{
+        \vspace{5pt}
+        \question{Why not sending directly the labels?}
+    }
+
+    \begin{itemize}
+        \item<4-> Might be interested in multiple downstream tasks;
+        \item<5-> Would require knowing tasks of interest at compression time.
+    \end{itemize}
+
+    \only<6->{
+        $\rightarrow$ The objective is \textbf{unsupervised} 
+    }
+
+\end{frame}
 
 
-    % \def \imgWidth {0.2\textwidth}
-
-    % \only<8->{
-    %     \begin{figure}
-    %         \centering
-    %         \includegraphics[width=\imgWidth]{\imgsPath{applications/satellite-detection.png}} \quad
-    %         \includegraphics[width=\imgWidth]{\imgsPath{applications/quality_control.jpg}} \quad
-    %         \includegraphics[width=\imgWidth]{\imgsPath{applications/face-recognition.jpeg}} \quad
-    %         \includegraphics[width=\imgWidth]{\imgsPath{applications/selfdriving-cars.jpeg}} 
-    %     \end{figure}
-    % }
-
-
+\begin{frame}{Performance}
+    \label{slide:performance}
 \end{frame}
 
 \end{document}
