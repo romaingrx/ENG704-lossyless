@@ -2,7 +2,7 @@
 %-*- coding: utf-8 -*-
 %@author : Romain Graux
 %@date : 2022 Mar 08, 16:20:03
-%@last modified : 2022 Mar 16, 11:35:57
+%@last modified : 2022 Mar 16, 13:45:11
 
 
 % [ PLAN ] 
@@ -48,6 +48,8 @@
 \setbeamercolor{progress bar}{fg=primaryColor}
 
 % Personal commands declaration
+% Symbols
+\newcommand{\Tau}{\mathcal{T}}
 % all path commands
 \newcommand{\docsPath}[1]{./docs/#1}
 \newcommand{\imgsPath}[1]{\docsPath{imgs/#1}}
@@ -272,7 +274,7 @@
                     \item<4> e.g. $X$: all images of machine learning researchers
                 \end{itemize}
             }
-        \item<5-> \color{primaryColor}{While ensuring high performance on any task $Y$ of interest $\tau = \{Y_1, Y_2, \dots\}$}
+        \item<5-> \color{primaryColor}{While ensuring high performance on any task $Y$ of interest $\Tau = \{Y_1, Y_2, \dots\}$}
             \only<6-7>{
                 \begin{itemize}
                     \item<6-7> e.g. $Y_1$: how old is the person?
@@ -287,7 +289,7 @@
     \only<9->{
         \vspace{5pt}
         \alignCovered{
-            \uncover<11->{\alt<11>{\underbrace{\sup_{Y \in \tau} }_{\text{all tasks}}}{\sup_{Y \in \tau}}}
+            \uncover<11->{\alt<11>{\underbrace{\sup_{Y \in \Tau} }_{\text{all tasks}}}{\sup_{Y \in \Tau}}}
             \, 
             \uncover<9->{\alt<9>{\underbrace{R[Y|Z] - R[Y|X]}_{\text{excess Bayes risk}}}{R[Y|Z] - R[Y|X]}}
             \uncover<10->{\alt<10>{\underbrace{\leq \delta}_{\text{small}}}{\leq \delta}}
@@ -300,7 +302,7 @@
     }
 
     \only<13->{
-        \keyPoint{Problem:} Would assume access $\tau$
+        \keyPoint{Problem:} Would assume access $\Tau$
     }
 
 \end{frame}
@@ -315,20 +317,32 @@
     \pause
 
     $\rightarrow$ ubiquitous in ML: data augmentation
+    
+    \pause
+
+    $\rightarrow$ formalized using invariance to an equivalence relationship $\sim$
 
     \pause
 
     \begin{block}{Proposition}
-        Exists a "worst task" $M(X)$ that has all information to predict any variant task $Y \in \tau$
+        Exists a "worst task" $M(X)$ that has all information to predict any invariant task $Y \in \Tau$
         \alignCovered{
             \uncover<6->{R[M(X)|Z] \, = \,}
-            \uncover<5->{\sup_{Y \in \tau} R[Y|Z] - R[Y|X]}
+            \uncover<5->{\sup_{Y \in \Tau} R[Y|Z] - R[Y|X]}
             \uncover<7->{\leq \delta}
         }
     \end{block}
+
+    What we want:
+    \begin{align*}
+        x \sim x^+ 
+        \iff
+        M(x) = M(x^+)
+        \text{ for any } x, x^+ \in X
+    \end{align*}
 \end{frame}
 
-\begin{frame}{Worst task example}
+\begin{frame}{Worst task: example}
     \setlength{\abovecaptionskip}{5pt}
     \vfill
     \begin{columns}
@@ -352,6 +366,33 @@
         }
     \end{columns}
     \vfill
+\end{frame}
+
+\begin{frame}{Theorem: Rate-Invariance}
+    Using the rate-distortion therorem [Shannon, 1959] with $R[M(X)|Z]$ as distortion:
+
+    \vspace{5pt}
+
+    \begin{block}{Theorem (Rate-Invariance)}
+        The minimum achievable bit-rate for transmitting $Z$ s.t. for any invariant $Y \in \Tau$ we have an excess Bayes risk $R[Y|Z] - R[Y|X]$ upper bounded by $\delta$ is
+        \alignCovered{
+            \text{Rate}(\delta)
+            &= 
+            \only<-3>{
+                \uncover<2->{\underbrace{H[M(x)]}_{\text{Minimum bit-rate}}} \,
+                \uncover<3->{\underbrace{-\delta}_{\text{Predictive loss}}} 
+            }
+            \only<4->{
+                \underbrace{H[x]}_{\text{Standard compression}} \,
+                \underbrace{-H[x|M(x)]}_{\text{Gains due to Invariance}} \,
+                \underbrace{-\delta}_{\text{Predictive loss}}
+            }
+        }
+    \end{block}
+
+    \only<5>{
+        $\Rightarrow$ a $\delta$ decrease in \textit{log-loss} save exactly $\delta$ bits
+    }
 \end{frame}
 
 \begin{frame}{Performance}
