@@ -10,7 +10,6 @@ from torchvision.datasets import MNIST
 import torchvision.transforms as T
 
 DATA_DIR = "~/datasets/"
-
 mnist = MNIST(DATA_DIR, download=True, train=True)
 
 

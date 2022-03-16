@@ -2,7 +2,7 @@
 %-*- coding: utf-8 -*-
 %@author : Romain Graux
 %@date : 2022 Mar 08, 16:20:03
-%@last modified : 2022 Mar 16, 09:32:30
+%@last modified : 2022 Mar 16, 11:35:57
 
 
 % [ PLAN ] 
@@ -37,7 +37,7 @@
           \vfill
       }
 }
-\setbeamercovered{transparent}
+% \setbeamercovered{transparent}
 
 % Settings of all colors
 \setbeamercolor{background canvas}{bg=white}
@@ -54,6 +54,13 @@
 \newcommand{\mnistPath}[1]{\imgsPath{mnist/#1}}
 % visualization commands
 \newcommand{\question}[1]{\colorbox{primaryColor!15}{\large{\color{secondaryColor}#1}}}
+\newcommand{\keyPoint}[1]{\color{secondaryColor}{\textbf{#1}}}
+\newcommand{\alignCovered}[1]{%
+        \setbeamercovered{transparent}
+        \begin{align*}
+            #1
+        \end{align*}
+}
 
 % Meta information declaration
 \title{Lossy compression for lossless prediction}
@@ -256,7 +263,7 @@
 \end{frame}
 
 \begin{frame}{Problem setup}
-    \color{secondaryColor}{\large \textbf{Goal:}}
+    \keyPoint{\large Goal:}
     \begin{itemize}
         \item<2-> \color{primaryColor}{Minimum achievable bit-rate to store $X$}
             \only<3-4>{
@@ -279,12 +286,12 @@
     }
     \only<9->{
         \vspace{5pt}
-        \begin{align*}
+        \alignCovered{
             \uncover<11->{\alt<11>{\underbrace{\sup_{Y \in \tau} }_{\text{all tasks}}}{\sup_{Y \in \tau}}}
             \, 
             \uncover<9->{\alt<9>{\underbrace{R[Y|Z] - R[Y|X]}_{\text{excess Bayes risk}}}{R[Y|Z] - R[Y|X]}}
             \uncover<10->{\alt<10>{\underbrace{\leq \delta}_{\text{small}}}{\leq \delta}}
-        \end{align*}
+        }
     }
     % R is the logloss
 
@@ -293,12 +300,59 @@
     }
 
     \only<13->{
-        \color{secondaryColor}{\textbf{Problem:}} Would assume access $\tau$
+        \keyPoint{Problem:} Would assume access $\tau$
     }
 
 \end{frame}
 
+\begin{frame}{Key assumption: Invariance structure}
+    Tasks of interest to humans share structure. 
 
+    \pause
+
+    \keyPoint{Assumption:} tasks of interest are invariant to some transformation
+
+    \pause
+
+    $\rightarrow$ ubiquitous in ML: data augmentation
+
+    \pause
+
+    \begin{block}{Proposition}
+        Exists a "worst task" $M(X)$ that has all information to predict any variant task $Y \in \tau$
+        \alignCovered{
+            \uncover<6->{R[M(X)|Z] \, = \,}
+            \uncover<5->{\sup_{Y \in \tau} R[Y|Z] - R[Y|X]}
+            \uncover<7->{\leq \delta}
+        }
+    \end{block}
+\end{frame}
+
+\begin{frame}{Worst task example}
+    \setlength{\abovecaptionskip}{5pt}
+    \vfill
+    \begin{columns}
+        \foreach \pathfile\cap\lab in {
+            \imgsPath{lenna/augmented/gray.png}/$x_0$: gray scale/x_0,
+            \imgsPath{lenna/augmented/brightness.png}/$x_1$: brightness/x_1,
+            \imgsPath{lenna/augmented/hflip.png}/$x_2$: horizontal flip/x_2,
+            \imgsPath{lenna/augmented/saturation.png}/$x_3$: saturation/x_3,
+            \imgsPath{lenna/source.png}/$M(x)$: unaugmented/unaugmented
+        }{
+            \begin{column}{0.2\textwidth}
+            \only<+->{
+                    \begin{figure}
+                        \centering
+                        \includegraphics[width=0.9\textwidth]{\pathfile}
+                        \caption*{\tiny \cap}
+                        \label{fig:worst-task-\lab}
+                    \end{figure}
+            }
+            \end{column}
+        }
+    \end{columns}
+    \vfill
+\end{frame}
 
 \begin{frame}{Performance}
     \label{slide:performance}
