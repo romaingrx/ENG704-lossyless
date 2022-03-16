@@ -2,7 +2,7 @@
 %-*- coding: utf-8 -*-
 %@author : Romain Graux
 %@date : 2022 Mar 08, 16:20:03
-%@last modified : 2022 Mar 16, 13:45:11
+%@last modified : 2022 Mar 16, 17:13:08
 
 
 % [ PLAN ] 
@@ -197,6 +197,8 @@
     \end{itemize}
 \end{frame}
 
+\section{Intuition}
+
 \begin{frame}{Intuition: Augmented MNIST}
     \foreach \dir\cap\lab in {
         \mnistPath{source/}/Source: Augmented MNIST/mnist-source,
@@ -263,6 +265,8 @@
     \vfill
 
 \end{frame}
+
+\section{Formalism}
 
 \begin{frame}{Problem setup}
     \keyPoint{\large Goal:}
@@ -342,7 +346,7 @@
     \end{align*}
 \end{frame}
 
-\begin{frame}{Worst task: example}
+\begin{frame}{Worst task: data augmentation example}
     \setlength{\abovecaptionskip}{5pt}
     \vfill
     \begin{columns}
@@ -393,6 +397,50 @@
     \only<5>{
         $\Rightarrow$ a $\delta$ decrease in \textit{log-loss} save exactly $\delta$ bits
     }
+\end{frame}
+
+\section{In practice}
+\def \modelWidth {0.9\textwidth}
+
+\begin{frame}{Training architecture} 
+    \vfill
+    \foreach \archName in {0,1,2,3}{
+        \only<+>{
+            \begin{figure}[h!]
+                \centering
+                \includegraphics[width=\modelWidth]{\imgsPath{architecture/both/\archName.png}}
+            \end{figure}
+        }
+    }
+
+    \vfill
+
+    \only<3->{
+        \keyPoint{Entropy bottleneck:} compressed $Z$
+    }
+
+    \vfill
+\end{frame}
+
+
+\begin{frame}{Variational Invariant Compressor (VIC)}
+    \begin{figure}[ht!]
+        \centering
+        \includegraphics[width=\modelWidth]{\imgsPath{architecture/vic.png}}
+        \label{fig:vic}
+    \end{figure}
+\end{frame}
+
+\begin{frame}{Bottleneck InfoNCE (BINCE)}
+    \begin{figure}[ht!]
+        \centering
+        \includegraphics[width=\modelWidth]{\imgsPath{architecture/bince.png}}
+        \label{fig:bince}
+    \end{figure}
+\end{frame}
+
+\begin{frame}{VIC vs BINCE}
+    \label{slide:performance}
 \end{frame}
 
 \begin{frame}{Performance}
