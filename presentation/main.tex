@@ -2,7 +2,7 @@
 %-*- coding: utf-8 -*-
 %@author : Romain Graux
 %@date : 2022 Mar 08, 16:20:03
-%@last modified : 2022 Mar 15, 19:43:16
+%@last modified : 2022 Mar 16, 09:32:30
 
 
 % [ PLAN ] 
@@ -26,7 +26,18 @@
 
 % Theme definition and progessbar settings
 \usetheme[progressbar=frametitle]{metropolis}
+\useinnertheme{metropolis}
+\useoutertheme{metropolis}
 \setbeamertemplate{frame numbering}[fraction]
+\setbeamertemplate{navigation symbols}{
+      \vbox{
+          \hbox{\insertslidenavigationsymbol}
+          \hbox{\insertframenavigationsymbol}
+          \hbox{\insertbackfindforwardnavigationsymbol}
+          \vfill
+      }
+}
+\setbeamercovered{transparent}
 
 % Settings of all colors
 \setbeamercolor{background canvas}{bg=white}
@@ -34,7 +45,7 @@
 \setbeamercolor{frametitle}{bg=greyBackgroundColor, fg=primaryColor}
 \setbeamercolor{structure}{fg=primaryColor}
 \setbeamercolor{subsection in head/foot}{fg=secondaryColor}
-\setbeamercolor{progress bar}{fg=secondaryColor}
+\setbeamercolor{progress bar}{fg=primaryColor}
 
 % Personal commands declaration
 % all path commands
@@ -58,10 +69,10 @@
 \end{frame}
 
 \begin{frame}{Motivation}
-    $10^{21}$ - $10^{23}$ bytes data collected per year
+    $\sim50$ trillion GB data collected per year
 
     \only<2->{
-        $\rightarrow$ But most data is processed by algorithms performing \textbf{downstream tasks}.
+        $\Rightarrow$ But most data is processed by algorithms performing \textbf{downstream tasks}.
     \vspace{5pt}
     }
 
@@ -183,7 +194,7 @@
         \mnistPath{standard/}/Standard neural compressor: 130 bit-rate/mnist-standard,
         \mnistPath{prototypicals/}/Their neural compressor: 48 bit-rate/mnist-our
     }{
-        \only<1>{
+        \only<+-3>{
             \begin{figure}
                 \centering
                 \includegraphics[width=0.15\textwidth]{\dir0.png}
@@ -198,7 +209,7 @@
             \vspace{-15pt}
         }
 
-        \only<2->{
+        \only<4->{
             \begin{figure}
                 \centering
                 \includegraphics[width=0.05\textwidth]{\dir0.png}
@@ -213,7 +224,7 @@
         }
     }
 
-    \only<2->{
+    \only<4->{
         \vfill
         \textbf{Prototypical} digit ensures 
         \begin{math}
@@ -224,21 +235,69 @@
         \end{math}
     }
 
-    \only<3->{
+    \only<5->{
         \vspace{5pt}
         \question{Why not sending directly the labels?}
     }
 
+    \only<6->{
+        \begin{itemize}
+            \item<6-> Might be interested in multiple downstream tasks;
+            \item<7-> Would require knowing tasks of interest at compression time.
+        \end{itemize}
+    }
+
+    \only<8->{
+        $\Rightarrow$ The objective is \textbf{unsupervised} 
+    }
+
+    \vfill
+
+\end{frame}
+
+\begin{frame}{Problem setup}
+    \color{secondaryColor}{\large \textbf{Goal:}}
     \begin{itemize}
-        \item<4-> Might be interested in multiple downstream tasks;
-        \item<5-> Would require knowing tasks of interest at compression time.
+        \item<2-> \color{primaryColor}{Minimum achievable bit-rate to store $X$}
+            \only<3-4>{
+                \begin{itemize}
+                    \item<3-4> e.g. $X$: all satellite images
+                    \item<4> e.g. $X$: all images of machine learning researchers
+                \end{itemize}
+            }
+        \item<5-> \color{primaryColor}{While ensuring high performance on any task $Y$ of interest $\tau = \{Y_1, Y_2, \dots\}$}
+            \only<6-7>{
+                \begin{itemize}
+                    \item<6-7> e.g. $Y_1$: how old is the person?
+                    \item<7> e.g. $Y_2$: does the person wear glasses?
+                \end{itemize}
+            }
     \end{itemize}
 
-    \only<6->{
-        $\rightarrow$ The objective is \textbf{unsupervised} 
+    \only<8->{
+        $\Rightarrow$ looking for a representation $Z$ s.t. predictions are approx. as good as using $X$
+    }
+    \only<9->{
+        \vspace{5pt}
+        \begin{align*}
+            \uncover<11->{\alt<11>{\underbrace{\sup_{Y \in \tau} }_{\text{all tasks}}}{\sup_{Y \in \tau}}}
+            \, 
+            \uncover<9->{\alt<9>{\underbrace{R[Y|Z] - R[Y|X]}_{\text{excess Bayes risk}}}{R[Y|Z] - R[Y|X]}}
+            \uncover<10->{\alt<10>{\underbrace{\leq \delta}_{\text{small}}}{\leq \delta}}
+        \end{align*}
+    }
+    % R is the logloss
+
+    \only<12->{
+        $\delta = 0$ : lossless predicition regime
+    }
+
+    \only<13->{
+        \color{secondaryColor}{\textbf{Problem:}} Would assume access $\tau$
     }
 
 \end{frame}
+
 
 
 \begin{frame}{Performance}
