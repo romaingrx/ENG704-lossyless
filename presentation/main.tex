@@ -2,8 +2,13 @@
 %-*- coding: utf-8 -*-
 %@author : Romain Graux
 %@date : 2022 Mar 08, 16:20:03
-%@last modified : 2022 Mar 16, 17:13:08
+%@last modified : 2022 Mar 17, 08:40:38
 
+
+% [ TODO ]
+% - finish all todo
+% - check mail and add needed parts
+% - Small notes and check software for slideshow
 
 % [ PLAN ] 
 % - Motivation
@@ -18,6 +23,8 @@
 
 % Import all packages
 \usepackage{graphicx,xcolor,caption}
+\usepackage{subfig}
+\usepackage{animate}
 
 % Color declarations
 \definecolor{greyBackgroundColor}{rgb}{0.8,0.8,0.8}
@@ -37,7 +44,6 @@
           \vfill
       }
 }
-% \setbeamercovered{transparent}
 
 % Settings of all colors
 \setbeamercolor{background canvas}{bg=white}
@@ -347,6 +353,15 @@
 \end{frame}
 
 \begin{frame}{Worst task: data augmentation example}
+    \only<1>{
+        \begin{figure}[h!]
+            \centering
+            \includegraphics[width=.6\textwidth]{\imgsPath{lenna/source.png}}
+            \caption*{Lenna: source image}
+        \end{figure}
+    }
+    \pause
+
     \setlength{\abovecaptionskip}{5pt}
     \vfill
     \begin{columns}
@@ -400,7 +415,7 @@
 \end{frame}
 
 \section{In practice}
-\def \modelWidth {0.9\textwidth}
+\def \modelwidth {0.9\textwidth}
 
 \begin{frame}{Training architecture} 
     \vfill
@@ -408,7 +423,7 @@
         \only<+>{
             \begin{figure}[h!]
                 \centering
-                \includegraphics[width=\modelWidth]{\imgsPath{architecture/both/\archName.png}}
+                \includegraphics[width=\modelwidth]{\imgsPath{architecture/both/\archName.png}}
             \end{figure}
         }
     }
@@ -423,29 +438,206 @@
 \end{frame}
 
 
-\begin{frame}{Variational Invariant Compressor (VIC)}
-    \begin{figure}[ht!]
-        \centering
-        \includegraphics[width=\modelWidth]{\imgsPath{architecture/vic.png}}
-        \label{fig:vic}
-    \end{figure}
+
+\begin{frame}{Variational Invariant Compressor} 
+    \only<-3>{
+        \begin{figure}[ht!]
+            \centering
+            \includegraphics[width=\modelwidth]{\imgsPath{architecture/vic.png}}
+            \label{fig:vic}
+        \end{figure}
+
+        \vfill
+
+        \begin{itemize}
+            \item<2-> Reconstruct the prototypicals 
+            \item<3-> Unaugmented images
+        \end{itemize}
+    }
+
+
+    \only<4->{
+        \begin{figure}[ht!]
+            \centering
+            \includegraphics[width=0.45\textwidth]{\imgsPath{architecture/vic.png}}
+            \label{fig:vic}
+        \end{figure}
+    }
+
+    \only<4->{
+
+        \begin{columns}
+            \begin{column}{0.25\textwidth}
+                \begin{figure}[h!]
+                    \centering
+                    \includegraphics[width=\textwidth]{\imgsPath{architecture/vic/error-bitrate.png}}
+                    \caption*{Rate-Error curve}
+                    \label{fig:rate-error}
+                \end{figure}
+            \end{column}
+            \begin{column}{0.75\textwidth}
+                \only<5->{
+                    \setlength{\abovecaptionskip}{-8pt}
+                    \begin{figure}[h!]
+                        \captionsetup[subfigure]{labelformat=empty}
+                        \centering
+                        \includegraphics[width=0.8\textwidth]{\imgsPath{architecture/vic/reconstructions.png}}
+                        \subfloat[]{
+                            \raisebox{0.55in}{\rotatebox[origin=t]{90}{\tiny \rotatebox{270}{(3)} \hspace{0.18in} \rotatebox{270}{(2)} \hspace{0.18in} \rotatebox{270}{(1)}}}   %%% 0.75in is half of figure height 1.5in
+                          }
+                        \caption*{Reconstructions that allow $99\%$ downstream accuracy\\
+                        \tiny{(1) Source (2) Standard compression [130 bits] (3) Invariant compression [48 bits]}}
+                        \label{fig:reconstructions}
+                    \end{figure}
+
+                }
+            \end{column}
+        \end{columns}
+    
+
+    }
+
 \end{frame}
 
-\begin{frame}{Bottleneck InfoNCE (BINCE)}
+\begin{frame}{Bottleneck InfoNCE: Intuition}
     \begin{figure}[ht!]
         \centering
-        \includegraphics[width=\modelWidth]{\imgsPath{architecture/bince.png}}
+        \includegraphics[width=\modelwidth]{\imgsPath{architecture/bince.png}}
         \label{fig:bince}
     \end{figure}
+
+    \pause
+
+    \only<-4>{
+        \setlength{\abovecaptionskip}{5pt}
+        \vfill
+        \keyPoint{Contrastive learning} 
+        \begin{columns}
+            \centering
+            \foreach \nb\cap in {
+                0/Latent representation,
+                1/Bottleneck,
+                2/Contrastive learning
+            }{
+                \begin{column}{0.3\textwidth}
+                \only<+->{
+                        \begin{figure}
+                            \centering
+                            \includegraphics[width=0.9\textwidth]{\imgsPath{contrastive/\nb.png}}
+                            \caption*{\cap}
+                        \end{figure}
+                }
+                \end{column}
+            }
+        \end{columns}
+    }
+
+    \only<5->{
+        \keyPoint{Pros:}
+        \begin{itemize}
+            \item<6-> does not have to reconstruct high dimensional data
+            \item<7-> gives representations that are approx. linearly separable
+        \end{itemize}
+    }
+
+    \only<8->{
+        \keyPoint{Cons:}
+        \begin{itemize}
+            \item<9-> diminishes interpretability
+            \item<10-> has a high bias
+        \end{itemize}
+    }
+
 \end{frame}
 
-\begin{frame}{VIC vs BINCE}
-    \label{slide:performance}
+\begin{frame}{Trained encoder : CLIP}
+    \keyPoint{Idea:} Can simply add an entropy bottleneck to a SOTA SSL
+
+    \only<2->{
+        \keyPoint{CLIP:} trained on $+400$M of image/text pairs
+    }
+    \vfill
+    \begin{columns}
+        \column{0.5\textwidth}
+        \only<2-3>{
+            \begin{figure}
+                \centering
+                \includegraphics[width=\textwidth]{\imgsPath{clip/a.png}}
+            \end{figure}
+        }
+        \only<4>{
+            \begin{figure}
+                \centering
+                \includegraphics[width=\textwidth]{\imgsPath{clip/af.png}}
+            \end{figure}
+        }
+        \column{0.5\textwidth}
+        \only<3>{
+            \begin{figure}
+                \centering
+                \includegraphics[width=\textwidth]{\imgsPath{clip/b.png}}
+            \end{figure}
+        }
+        \only<4>{
+            \begin{figure}
+                \centering
+                \includegraphics[width=\textwidth]{\imgsPath{clip/bf.png}}
+            \end{figure}
+        }
+    \end{columns}
+    \vfill
 \end{frame}
 
-\begin{frame}{Performance}
-    \label{slide:performance}
+\begin{frame}{Bottleneck InfoNCE: Experiment}
+    \begin{enumerate}[<+->]
+        \item Download SOTA SLL (CLIP) and freeze it
+        \item Train an entropy bottleneck on some dataset (MSCOCO) $< 1$ hour
+        \item Evaluate on very different tasks/datasets \color{primaryColor}{never seen before}
+    \end{enumerate}
+
+    \only<4>{
+        \label{slide:performance}
+        \vfill
+        \begin{figure}[h!]
+            \centering
+            \includegraphics[width=.9\textwidth]{\imgsPath{performances.png}}
+        \end{figure}
+    }
+    % TODO: explain the JPEG rates and the accuracies
 \end{frame}
+
+\section{Discussion}
+
+\begin{frame}{Discussion}
+    \begin{columns}
+        \centering
+        \column{.4\textwidth}
+        \centering
+        \keyPoint{Strengths}
+        \vspace{5pt}
+        \begin{itemize}[<+->]
+            \item Rates
+            \item Zero-Shot
+        \end{itemize}
+
+        \column{.4\textwidth}
+        \centering
+        \keyPoint{Weaknesses}
+        \vspace{5pt}
+        \begin{itemize}[<+->]
+            \item Irrecoverable loss 
+            \item Interpretability of compressed data
+            \item Set of transformations hard to find
+        \end{itemize}
+    \end{columns}
+
+    \only<5>{
+        \vfill
+        $\Rightarrow$ Achieved orders of magnitude improvements in compression for predicitons.
+    }
+\end{frame}
+
+\section{Thank you!}
 
 \end{document}
 
