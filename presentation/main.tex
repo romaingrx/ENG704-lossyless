@@ -2,7 +2,7 @@
 %-*- coding: utf-8 -*-
 %@author : Romain Graux
 %@date : 2022 Mar 08, 16:20:03
-%@last modified : 2022 Mar 17, 08:40:38
+%@last modified : 2022 Mar 17, 12:14:44
 
 
 % [ TODO ]
@@ -84,6 +84,10 @@
 \end{frame}
 
 \begin{frame}{Motivation}
+    \note[itemize]{
+    \item point 1
+    \item point 2
+    }
     $\sim50$ trillion GB data collected per year
 
     \only<2->{
@@ -266,6 +270,8 @@
 
     \only<8->{
         $\Rightarrow$ The objective is \textbf{unsupervised} 
+
+        Formalized using \color{primaryColor}{invariances}
     }
 
     \vfill
@@ -318,10 +324,6 @@
 \end{frame}
 
 \begin{frame}{Key assumption: Invariance structure}
-    Tasks of interest to humans share structure. 
-
-    \pause
-
     \keyPoint{Assumption:} tasks of interest are invariant to some transformation
 
     \pause
@@ -337,7 +339,7 @@
     \begin{block}{Proposition}
         Exists a "worst task" $M(X)$ that has all information to predict any invariant task $Y \in \Tau$
         \alignCovered{
-            \uncover<6->{R[M(X)|Z] \, = \,}
+            \uncover<6->{H[M(X)|Z] \, = \,}
             \uncover<5->{\sup_{Y \in \Tau} R[Y|Z] - R[Y|X]}
             \uncover<7->{\leq \delta}
         }
@@ -544,7 +546,7 @@
         \keyPoint{Cons:}
         \begin{itemize}
             \item<9-> diminishes interpretability
-            \item<10-> has a high bias
+            \item<10-> has a high bias, needs lot of negative examples
         \end{itemize}
     }
 
@@ -589,6 +591,7 @@
 \end{frame}
 
 \begin{frame}{Bottleneck InfoNCE: Experiment}
+    \label{slide:performance}
     \begin{enumerate}[<+->]
         \item Download SOTA SLL (CLIP) and freeze it
         \item Train an entropy bottleneck on some dataset (MSCOCO) $< 1$ hour
@@ -596,7 +599,6 @@
     \end{enumerate}
 
     \only<4>{
-        \label{slide:performance}
         \vfill
         \begin{figure}[h!]
             \centering
@@ -634,6 +636,7 @@
     \only<5>{
         \vfill
         $\Rightarrow$ Achieved orders of magnitude improvements in compression for predicitons.
+        It's one of the first paper on lossy compression in a multi-tasks setting.
     }
 \end{frame}
 
